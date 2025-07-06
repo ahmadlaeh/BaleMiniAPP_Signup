@@ -26,7 +26,7 @@
         <input type="tel" id="mobile" name="mobile" required pattern="09\d{9}" maxlength="11">
 
         <label for="billidentifier">شناسه قبض</label>
-        <input type="tel" id="billidentifier" name="billidentifier" required pattern="d{13}" maxlength="13">
+        <input type="tel" id="billidentifier" name="billidentifier" required pattern="\d{13}" maxlength="13">
 
         <label for="email">ایمیل (اختیاری)</label>
         <input type="email" id="email" name="email">
@@ -43,7 +43,7 @@ document.getElementById('registerForm').onsubmit = async function(e){
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const mobile = document.getElementById('mobile').value.trim().replace(/[٠-٩۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) & 0xf));
-    const mobile = document.getElementById('billidentifier').value.trim().replace(/[٠-٩۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) & 0xf));
+    const billidentifier = normalizeDigits(document.getElementById('billidentifier').value.trim());
     const email = document.getElementById('email').value.trim();
     const errorDiv = document.getElementById('error');
     const successDiv = document.getElementById('success');
@@ -55,10 +55,9 @@ document.getElementById('registerForm').onsubmit = async function(e){
         errorDiv.textContent = "شماره موبایل صحیح نیست.";
         return;
     }
-    if (!/d{13}$/.test(billidentifier)){
-        errorDiv.textContent = "شناسه قبض صحیح نیست.";
-        return;
-    }
+    if (!/^\d{13}$/.test(billidentifier)){
+        errorDiv.textContent = "شناسه قبض باید ۱۳ رقم عددی باشد.";
+        return;    }
     
     if (name.length < 3){
         errorDiv.textContent = "لطفاً نام را وارد کنید.";
