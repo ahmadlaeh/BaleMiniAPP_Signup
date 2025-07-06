@@ -23,15 +23,13 @@
         <input type="text" id="name" name="name" required>
 
         <label for="mobile">شماره موبایل</label>
-        <input type="tel" id="mobile" name="mobile" required pattern="09\d{9}" maxlength="11">
+        <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{11}" maxlength="11">
 
         <label for="billidentifier">شناسه قبض</label>
-        <input type="tel" id="billidentifier" name="billidentifier" required pattern="\d{13}" maxlength="13">
+        <input type="tel" id="billidentifier" name="billidentifier" required pattern="[0-9]{13}" maxlength="13">
 
         <label for="email">ایمیل (اختیاری)</label>
         <input type="email" id="email" name="email">
-
-        
 
         <div class="error" id="error"></div>
         <button type="submit">ثبت‌نام</button>
@@ -39,10 +37,24 @@
     <div class="success" id="success"></div>
 </div>
 <script>
+// تابع تبدیل ارقام فارسی و عربی
+function normalizeDigits(str) {
+    return str.replace(/[٠-٩۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) & 0xf));
+}
+
+// پیام خطا به صورت فارسی برای اینپوت شناسه قبض
+const billInput = document.getElementById('billidentifier');
+billInput.oninvalid = function(e) {
+    e.target.setCustomValidity("شناسه قبض باید ۱۳ رقم عددی باشد.");
+};
+billInput.oninput = function(e) {
+    e.target.setCustomValidity("");
+};
+
 document.getElementById('registerForm').onsubmit = async function(e){
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
-    const mobile = document.getElementById('mobile').value.trim().replace(/[٠-٩۰-۹]/g, d => String.fromCharCode(d.charCodeAt(0) & 0xf));
+    const mobile = normalizeDigits(document.getElementById('mobile').value.trim());
     const billidentifier = normalizeDigits(document.getElementById('billidentifier').value.trim());
     const email = document.getElementById('email').value.trim();
     const errorDiv = document.getElementById('error');
@@ -52,20 +64,20 @@ document.getElementById('registerForm').onsubmit = async function(e){
     successDiv.textContent = "";
 
     if (!/^09\d{9}$/.test(mobile)){
-        errorDiv.textContent = "شماره موبایل صحیح نیست.";
+        errorDiv.textContent = "شماره موبایل باید با 09 شروع شده و ۱۱ رقم باشد.";
         return;
     }
     if (!/^\d{13}$/.test(billidentifier)){
         errorDiv.textContent = "شناسه قبض باید ۱۳ رقم عددی باشد.";
-        return;    }
-    
+        return;    
+    }
     if (name.length < 3){
         errorDiv.textContent = "لطفاً نام را وارد کنید.";
         return;
     }
 
     // ارسال داده برای ذخیره (مثلاً به سرور یا ثبت محلی - اینجا فقط نمایش می‌دهد)
-    // await fetch('https://server.url/register', { method:'POST', body: JSON.stringify({mobile, name, email}) })
+    // await fetch('https://server.url/register', { method:'POST', body: JSON.stringify({mobile, name, email, billidentifier}) })
 
     successDiv.textContent = "ثبت‌نام شما با موفقیت انجام شد!";
     this.reset();
