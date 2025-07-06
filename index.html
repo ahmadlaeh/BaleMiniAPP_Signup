@@ -68,7 +68,7 @@ document.getElementById('registerForm').onsubmit = async function(e){
         return;
     }
     if (!/^\d{13}$/.test(billidentifier)){
-        errorDiv.textContent = "شناسه قبض باید ۱۳ رقم عددی باشد.";
+        errorDiv.textContent = "شناسه قبض باید عدد 13 رثمی باشد.";
         return;    
     }
     if (name.length < 3){
